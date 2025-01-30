@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Wrapped</title>
+    <style>
+        :root {
+            --primary-pink: #ff6b81;
+            --light-pink: #fff0f5;
+            --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            --success-green: #4caf50;
+            --light-green: #f0fff4;
+            --her-blue: #b8c0ff;
+            --you-pink: #ffb8d1;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff5f7;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            color: var(--primary-pink);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .typing-container {
+            display: inline-block;
+            border-right: 2px solid var(--primary-pink);
+            padding-right: 5px;
+            animation: blink 0.7s infinite;
+        }
+
+        .changing-word {
+            color: var(--primary-pink);
+            font-weight: bold;
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent }
+        }
+
+        .container {
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .message-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-group {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .interest-card {
+            background: var(--light-pink);
+        }
+
+        .interest-container {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        .interest-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-pink);
+        }
+
+        .red-flags {
+            background: #fff0f3;
+        }
+
+        .red-flag-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .green-flags {
+            background: var(--light-green);
+        }
+
+        .green-flag-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            color: var(--success-green);
+        }
+
+        .word-stats {
+            background: #f8f9fa;
+        }
+
+        .word-bar {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+
+        .word-label {
+            width: 80px;
+            color: #666;
+        }
+
+        .bar-container {
+            flex-grow: 1;
+            background: #e9ecef;
+            height: 15px;
+            border-radius: 10px;
+            margin: 0 10px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .her-bar {
+            background: var(--her-blue);
+        }
+
+        .you-bar {
+            background: var(--you-pink);
+        }
+
+        .bar-value {
+            width: 40px;
+            text-align: right;
+            color: #666;
+        }
+
+        .suggestion-box {
+            border-left: 4px solid var(--primary-pink);
+            padding: 10px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .conclusion-box {
+            grid-column: span 2;
+            background: #f8f9fa;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .conclusion-text {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .attachment-style {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .style-group {
+            text-align: center;
+        }
+
+        .style-label {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .style-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .chart-card {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <h1 class="title">Chat Wrapped</h1>
+        <div class="subtitle">
+            <span class="typing-container">Your relationship in </span>
+            <span class="changing-word" id="changingWord">numbers</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Messages count -->
+        <div class="card">
+            <h3>Messages count</h3>
+            <div class="message-stats">
+                <div class="stat-group">
+                    <div class="stat-number" class="ai">5789</div>
+                    <div class="stat-label">you</div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-number" class="ai">872</div>
+                    <div class="stat-label">her</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response time -->
+        <div class="card">
+            <h3>Average response time</h3>
+            <div class="message-stats">
+                <div class="stat-group">
+                    <div class="stat-number" class="ai">34s</div>
+                    <div class="stat-label">you</div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-number"class="ai">13h</div>
+                    <div class="stat-label">her</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interest level -->
+        <div class="card interest-card">
+            <h3>Interest level</h3>
+            <div class="interest-container">
+                <div class="stat-group">
+                    <div class="interest-value" class="ai">87%</div>
+                    <div class="stat-label">you</div>
+                </div>
+                <div class="stat-group">
+                    <div class="interest-value" class="ai">2%</div>
+                    <div class="stat-label">her</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compliment count -->
+        <div class="card">
+            <h3>Compliment count</h3>
+            <div class="message-stats">
+                <div class="stat-group">
+                    <div class="stat-number" class="ai">1789</div>
+                    <div class="stat-label">you</div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-number" class="ai">0</div>
+                    <div class="stat-label">her</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Red flags -->
+        <div class="card red-flags">
+            <h3>Red Flags▶</h3>
+            <div>Amy</div>
+            <div class="red-flag-item" class="ai">
+                <span>🍷</span>
+                <span>Still hangs out with her ex Blake</span>
+            </div>
+            <div class="red-flag-item"class="ai">
+                <span>💸</span>
+                <span>Called you broke 23 times</span>
+            </div>
+            <div class="red-flag-item" class="ai">
+                <span>❌</span>
+                <span>Blocked you a total of 122 times</span>
+            </div>
+        </div>
+
+        <!-- Green flags -->
+        <div class="card green-flags">
+            <h3>Green Flags</h3>
+            <div class="green-flag-item" class="ai">
+                <span>💚</span>
+                <span>Always responds eventually</span>
+            </div>
+            <div class="green-flag-item" class="ai">
+                <span>💚</span>
+                <span>Hasn't ghosted permanently</span>
+            </div>
+            <div class="green-flag-item" class="ai">
+                <span>💚</span>
+                <span>Sometimes says good morning</span>
+            </div>
+        </div>
+
+        <!-- Her words -->
+        <div class="card word-stats">
+            <h3>Top used words (her)</h3>
+            <div class="word-bar" class="ai">
+                <span class="word-label" >Blake</span>
+                <div class="bar-container">
+                    <div class="bar-fill her-bar" style="width: 98%"></div>
+                </div>
+                <span class="bar-value">98</span>
+            </div>
+            <div class="word-bar" class="ai">
+                <span class="word-label">block</span>
+                <div class="bar-container">
+                    <div class="bar-fill her-bar" style="width: 87%"></div>
+                </div>
+                <span class="bar-value">87</span>
+            </div>
+            <div class="word-bar" class="ai">
+                <span class="word-label">🍷</span>
+                <div class="bar-container">
+                    <div class="bar-fill her-bar" style="width: 60%"></div>
+                </div>
+                <span class="bar-value">60</span>
+            </div>
+            <div class="word-bar" class="ai">
+                <span class="word-label">syd</span>
+                <div class="bar-container">
+                    <div class="bar-fill her-bar" style="width: 49%"></div>
+                </div>
+                <span class="bar-value">49</span>
+            </div>
+            <div class="word-bar" class="ai">
+                <span class="word-label">no</span>
+                <div class="bar-container">
+                    <div class="bar-fill her-bar" style="width: 30%"></div>
+                </div>
+                <span class="bar-value">30</span>
+            </div>
+        </div>
+
+        <!-- Your words -->
+        <div class="card word-stats">
+            <h3>Top used words (you)</h3>
+            <div class="word-bar" class="ai">
+                <span class="word-label">Amy</span>
+                <div class="bar-container">
+                    <div class="bar-fill you-bar" style="width: 100%"></div>
+                </div>
+                <span class="bar-value">599</span>
+            </div>
+            <div class="word-bar" class="ai">
+                <span class="word-label">🥺</span>
+                <div class="bar-container">
+                    <div class="bar-fill you-bar" style="width: 71%"></div>
+                </div>
+                <span class="bar-value">428</span>
+            </div>
+            <div class="word-bar" class="ai">
+                <span class="word-label">please</span>
+                <div class="bar-container">
+                    <div class="bar-fill you-bar" style="width: 67%"></div>
+                </div>
+                <span class="bar-value">401</span>
+            </div>
+            <div class="word-bar" class="ai">
+                <span class="word-label">sorry</span>
+                <div class="bar-container">
+                    <div class="bar-fill you-bar" style="width: 58%"></div>
+                </div>
+                <span class="bar-value">350</span>
+            </div>
+            <div class="word-bar" class="ai">
+                <span class="word-label">no</span>
+                <div class="bar-container">
+                    <div class="bar-fill you-bar" style="width: 46%"></div>
+                </div>
+                <span class="bar-value">274</span>
+            </div>
+        </div>
+
+        <!-- Attachment style -->
+        <div class="card">
+            <h3>Attachment style</h3>
+            <div class="attachment-style" class="ai">
+                <div class="style-group">
+                    <div class="style-label">you</div>
+                    <div class="style-value">anxious</div>
+                    <div class="style-value">68%</div>
+                </div>
+                <div class="style-group">
+                    <div class="style-label">her</div>
+                    <div class="style-value">avoidant</div>
+                    <div class="style-value">100%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Suggestions for You -->
+        <div class="card">
+            <h3>Suggestions for You</h3>
+            <div class="suggestion-box" class="ai">
+                <p>1. Try to be less available</p>
+                <p>2. Work on self-worth</p>
+                <p>3. Consider therapy</p>
+                <p>4. Stop apologizing so much</p>
+            </div>
+        </div>
+
+        <!-- Suggestions for Her -->
+        <div class="card">
+            <h3>Suggestions for Her</h3>
+            <div class="suggestion-box" class="ai">
+                <p>1. Improve communication</p>
+                <p>2. Address commitment issues</p>
+                <p>3. Be more consistent</p>
+                <p>4. Stop mentioning Blake</p>
+            </div>
+        </div>
+
+        <!-- Messages chart -->
+        <div class="card chart-card" class="ai">
+            <h3>Messages per month</h3>
+            <canvas id="messageChart"></canvas>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="card conclusion-box">
+            <h3>Conclusion</h3>
+            <p class="conclusion-text" class="ai">
+                This relationship shows significant imbalance in effort and interest. 
+                Consider having an honest conversation about expectations or reevaluating 
+                the relationship dynamics.
+            </p>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
+    <script>
+        // Changing word animation
+        const words = ['numbers', 'statistics', 'data', 'story', 'reality'];
+        let currentIndex = 0;
+        const wordElement = document.getElementById('changingWord');
+
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % words.length;
+            wordElement.style.opacity = 0;
+            setTimeout(() => {
+                wordElement.textContent = words[currentIndex];
+                wordElement.style.opacity = 1;
+            }, 500);
+        }, 3000);
+
+        // Initialize the messages per month chart
+        const ctx = document.getElementById('chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Messages',
+                    data: [1000, 800, 900, 1000, 800, 700, 900, 800, 900, 800, 1000, 1200],
+                    borderColor: '#80deea',
+                    backgroundColor: 'rgba(128, 222, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 3000
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

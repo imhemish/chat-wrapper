@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Text File Processor</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .file-input {
+            margin-bottom: 20px;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #fileContent,
+        #response {
+            white-space: pre-wrap;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="file-input">
+            <input type="file" id="textFile" accept=".txt">
+            <button id="processButton">Process File</button>
+        </div>
+        <div class="result-container hidden" id="resultContainer">
+            <h3>File Content:</h3>
+            <div id="fileContent"></div>
+            <h3>Response:</h3>
+            <div id="response"></div>
+        </div>
+    </div>
+
+    <script>
+        class TextProcessor {
+            constructor() {
+                this.fileInput = document.getElementById('textFile');
+                this.processButton = document.getElementById('processButton');
+                this.fileContent = document.getElementById('fileContent');
+                this.response = document.getElementById('response');
+                this.resultContainer = document.getElementById('resultContainer');
+
+                this.knowledgeBase = `"I have a WhatsApp chat export containing messages between me and another person, including timestamps. Analyze this conversation and provide insights based on the following aspects and provide the precise and average size answer don't use any sign and make the things more clear:  
+1. Message Statistics  
+Total messages sent by me vs. the other person.  
+Who texts more frequently?  
+Average message length for both users.  
+Peak chatting hours for both users.  
+
+2. Response Time Analysis  
+Average response time for me vs. the other person.  
+Who responds faster?  
+Are there long gaps in responses?  
+
+3. Interest & Engagement Level  
+Who initiates conversations more?  
+Ratio of messages sent (who contributes more to the chat?).  
+Are the conversations balanced or one-sided?  
+
+4. Sentiment & Emotional Tone  
+Identify positive, neutral, and negative tones.  
+Detect emotional shifts (e.g., excitement, frustration, affection).  
+Identify words/phrases that indicate affection or conflict.  
+
+5. Common Topics & Keywords  
+What are the most discussed topics?  
+Identify frequently used words and phrases.  
+Detect any recurring patterns in conversation topics.  
+
+6. Red Flags & Relationship Patterns  
+Identify words indicating arguments, blocking, ignoring, or breakups.  
+Detect signs of ghosting or lack of interest (one-sided conversations).  
+Any major changes in texting frequency over time?  
+
+7. Attachment & Communication Style  
+Does the chat indicate an anxious or avoidant communication style?  
+Any signs of over-apologizing or excessive reassurance-seeking?  
+Identify playfulness, sarcasm, or deep emotional discussions.  
+
+8. Visual Summary & Insights  
+Total messages: Me - X, Other Person - Y  
+Who texts more: [Me/Other Person]  
+Avg. message length: Me - X words, Other Person - Y words  
+Peak hours: Me - [Time Range], Other Person - [Time Range]  
+Avg. response time: Me - X min, Other Person - Y min  
+Who responds faster: [Me/Other Person]  
+Long gaps: [Yes/No] (Longest: X hrs)  
+Who initiates more: [Me/Other Person]  
+Sentiment tone: Positive - X%, Neutral - Y%, Negative - Z%  
+Common topics: [Topic 1, Topic 2, Topic 3]  
+Red flags: [Yes/No] (Details: [Brief Notes])  
+Relationship pattern summary: [Short paragraph based on trends]  
+Suggestions for improving communication: [Short improvement tips]"  
+`;
+
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                this.processButton.addEventListener('click', () => this.processFile());
+            }
+
+            async processFile() {
+                const file = this.fileInput.files[0];
+                if (!file) {
+                    alert('Please select a file first');
+                    return;
+                }
+
+                try {
+                    const content = await this.readFile(file);
+                    this.fileContent.textContent = content;
+                    this.resultContainer.classList.remove('hidden');
+
+                    const response = await this.queryKnowledgeBase(content);
+                    this.response.textContent = response;
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    this.response.textContent = 'Error processing the file. Please try again.';
+                }
+            }
+
+            readFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(e);
+                    reader.readAsText(file);
+                });
+            }
+
+            async queryKnowledgeBase(userQuery) {
+                const config = {
+                    API_KEY: 'AIzaSyDQiYbOiipZKKWz5Ar37u55FcjtatEWotA'
+                };
+
+                const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
+
+                const response = await fetch(`${API_ENDPOINT}?key=${config.API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Context: "${this.knowledgeBase}" 
+                                           Question: "${userQuery}"
+                                           Please provide a comprehensive response.`
+                            }]
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch(error) {
+                console.error('Error querying knowledge base:', error);
+                return 'Sorry, I encountered an error processing your request.';
+            }
+        }
+
+
+        // Initialize the text processor when the document is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new TextProcessor();
+        });
+    </script>
+</body>
+
+</html>
