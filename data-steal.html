@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        input { margin: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Upload a File</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">analyze chat</button>
+
+    <h3>Uploaded Files</h3>
+    <div id="fileList"></div>
+
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) return alert("Please select a file.");
+            
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            let response = await fetch("http://localhost:5000/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            let result = await response.json();
+            if (result.success) {
+                alert("File uploaded successfully!");
+                loadFiles();
+            } else {
+                alert("Upload failed!");
+            }
+        }
+
+        async function loadFiles() {
+    let response = await fetch("http://localhost:5000/files");
+    let files = await response.json();
+
+    let fileList = document.getElementById("fileList");
+    fileList.innerHTML = files.map(file => {
+        let fileUrl = `http://localhost:5000/uploads/${file}`;
+        let fileType = file.split(".").pop().toLowerCase(); 
+
+        if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileType)) {
+            return `<p><img src="${fileUrl}" alt="${file}" width="200"></p>`;
+        } else {
+            return `<p><a href="${fileUrl}" download>${file}</a></p>`;
+        }
+    }).join("");
+}
+
+loadFiles();
+
+    </script>
+</body>
+</html>

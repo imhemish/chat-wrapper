@@ -1,7 +1,10 @@
+To integrate the design and additional features from the second code into your final working code, we need to combine the styles, structure, and functionality of both. Here's the updated version of your code with the new design and features:
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Love guru</title>
+    <title>Chat Analyzer</title>
     <style>
         :root {
             --primary-pink: #ff6b81;
@@ -233,45 +236,6 @@
         .chart-card {
             grid-column: span 2;
         }
-
-        /* Loading and Error Messages */
-        #loadingStatus {
-            margin: 20px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        #errorMessage {
-            margin: 20px;
-            color: #e74c3c;
-            font-weight: bold;
-        }
-
-        .hidden-msg {
-            display: none;
-        }
-
-        /* File Input Styling */
-        .file-input {
-            margin-bottom: 20px;
-        }
-
-        .file-input input[type="file"] {
-            margin-right: 10px;
-        }
-
-        .file-input button {
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .file-input button:hover {
-            background-color: #2980b9;
-        }
     </style>
 </head>
 <body>
@@ -289,12 +253,6 @@
             <input type="file" id="textFile" accept=".txt">
             <button id="processButton">Analyze Chat</button>
         </div>
-
-        <!-- Loading and Error Messages -->
-        <div id="loadingStatus" class="hidden-msg">Analyzing your file... This may take a moment</div>
-        <h5></h5>
-        <div id="errorMessage" class="hidden-msg"></div>
-
 
         <!-- Loading and Error Messages -->
         <div id="loadingStatus" class="hidden">Analyzing your file... This may take a moment</div>
@@ -476,7 +434,7 @@
                         body: JSON.stringify({
                             contents: [{
                                 parts: [{
-                                    text: `Analyze this WhatsApp chat and return STRICT JSON format with:
+                                    text: `Analyze this WhatsApp chat and return STRICT JSON format (NO MARKDOWN, NO CODE BLOCKS) with: 
                                     messageStatistics: { you: number, other: number },
                                     responseTimes: { you: string, other: string },
                                     interestLevels: { you: string, other: string },
@@ -488,9 +446,8 @@
                                     suggestionsForYou: string[],
                                     suggestionsForHer: string[],
                                     attachmentStyle: { you: string, her: string },
-                                    conclusion: string,
-                                    messagesPerMonth: number[]
-                                    Chat: ${content.substring(0, 30000)}`
+                                    conclusion: string
+                                    Chat: ${content.substring(0, 30000)}` // Limit content length
                                 }]
                             }]
                         })
@@ -575,8 +532,8 @@
                     </div>
                 `).join('');
 
-                 // Update Suggestions
-                 const suggestionsForYouContent = document.getElementById('suggestionsForYouContent');
+                        // Update Suggestions
+                        const suggestionsForYouContent = document.getElementById('suggestionsForYouContent');
                 suggestionsForYouContent.innerHTML = analysis.suggestionsForYou.map(suggestion => 
                     `<p>${suggestion}</p>`
                 ).join('');
@@ -603,7 +560,7 @@
                 document.getElementById('conclusionContent').textContent = analysis.conclusion;
 
                 // Show all cards
-                document.querySelectorAll('.card').forEach(card => card.classList.remove('hidden-msg'));
+                document.querySelectorAll('.card').forEach(card => card.classList.remove('hidden'));
 
                 // Initialize chart
                 this.initializeChart(analysis.messagesPerMonth);
