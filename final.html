@@ -1,8 +1,6 @@
-To integrate the design and additional features from the second code into your final working code, we need to combine the styles, structure, and functionality of both. Here's the updated version of your code with the new design and features:
-
-```html
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Chat Analyzer</title>
     <style>
@@ -18,13 +16,23 @@ To integrate the design and additional features from the second code into your f
 
         body {
             font-family: Arial, sans-serif;
-            background-color: #fff5f7;
+            background-color: #f1dade;
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+        #bigcontainer {
+    background: rgba(255, 255, 255, 0.2); /* Transparent white */
+    backdrop-filter: blur(10px); /* Blur effect */
+    -webkit-backdrop-filter: blur(10px); /* For Safari support */
+    border-radius: 15px; /* Rounded corners */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    padding: 20px;
+}
+
 
         .header-section {
             text-align: center;
@@ -57,7 +65,9 @@ To integrate the design and additional features from the second code into your f
         }
 
         @keyframes blink {
-            50% { border-color: transparent }
+            50% {
+                border-color: transparent
+            }
         }
 
         .container {
@@ -238,136 +248,149 @@ To integrate the design and additional features from the second code into your f
         }
     </style>
 </head>
+
 <body>
-    <div class="header-section">
-        <h1 class="title">Chat Analyzer</h1>
-        <div class="subtitle">
-            <span class="typing-container">Your relationship in </span>
-            <span class="changing-word" id="changingWord">numbers</span>
+
+    <div id="bigcontainer">
+        <div class="header-section">
+            <h1 class="title">Chat Analyzer</h1>
+            <div class="subtitle">
+                <span class="typing-container">Your relationship in </span>
+                <span class="changing-word" id="changingWord">numbers</span>
+            </div>
+
+            <h2>Get summery of your chat in 2 easy step</h2>
+
+            <p class="getfile">open the WhatsApp chat of the person click on 3 dots on top right</p>
+            <p class="getfile"> click on more then export chat and then extract the txt file and paste/ select that here
+            </p>
         </div>
-    </div>
 
-    <div class="container">
-        <!-- File Input Section -->
-        <div class="file-input">
-            <input type="file" id="textFile" accept=".txt">
-            <button id="processButton">Analyze Chat</button>
-        </div>
+        <div class="container">
+            <!-- File Input Section -->
 
-        <!-- Loading and Error Messages -->
-        <div id="loadingStatus" class="hidden">Analyzing your file... This may take a moment</div>
-        <div id="errorMessage" class="hidden"></div>
+            <div class="file-input">
+                <input type="file" id="textFile" accept=".txt">
+                <button id="processButton" onclick="uploadFile()">Analyze Chat</button>
+            </div>
 
-        <!-- Statistics Cards -->
-        <div class="card hidden" id="messageStatsCard">
-            <h3>Messages Count</h3>
-            <div class="message-stats">
-                <div class="stat-group">
-                    <div class="stat-number" id="message_sent_by_you">0</div>
-                    <div class="stat-label">You</div>
+
+            <!-- Loading and Error Messages -->
+            <div id="loadingStatus" class="hidden">Analyzing your file... This may take a moment</div>
+            <div id="errorMessage" class="hidden"></div>
+
+            <!-- Statistics Cards -->
+            <div class="card hidden" id="messageStatsCard">
+                <h3>Messages Count</h3>
+                <div class="message-stats">
+                    <div class="stat-group">
+                        <div class="stat-number" id="message_sent_by_you">0</div>
+                        <div class="stat-label">You</div>
+                    </div>
+                    <div class="stat-group">
+                        <div class="stat-number" id="message_sent_by_other">0</div>
+                        <div class="stat-label">Her</div>
+                    </div>
                 </div>
-                <div class="stat-group">
-                    <div class="stat-number" id="message_sent_by_other">0</div>
-                    <div class="stat-label">Her</div>
+            </div>
+
+            <div class="card hidden" id="responseTimeCard">
+                <h3>Average Response Time</h3>
+                <div class="message-stats">
+                    <div class="stat-group">
+                        <div class="stat-number" id="response_time_you">0s</div>
+                        <div class="stat-label">You</div>
+                    </div>
+                    <div class="stat-group">
+                        <div class="stat-number" id="response_time_other">0s</div>
+                        <div class="stat-label">Her</div>
+                    </div>
                 </div>
+            </div>
+
+            <div class="card interest-card hidden" id="interestCard">
+                <h3>Interest Level</h3>
+                <div class="interest-container">
+                    <div class="stat-group">
+                        <div class="interest-value" id="interest_you">0%</div>
+                        <div class="stat-label">You</div>
+                    </div>
+                    <div class="stat-group">
+                        <div class="interest-value" id="interest_other">0%</div>
+                        <div class="stat-label">Her</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card hidden" id="complimentCard">
+                <h3>Compliment Count</h3>
+                <div class="message-stats">
+                    <div class="stat-group">
+                        <div class="stat-number" id="compliments_you">0</div>
+                        <div class="stat-label">You</div>
+                    </div>
+                    <div class="stat-group">
+                        <div class="stat-number" id="compliments_other">0</div>
+                        <div class="stat-label">Her</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Red flags -->
+            <div class="card red-flags hidden" id="redFlagsCard">
+                <h3>Red Flags▶</h3>
+                <div id="redFlagsContent"></div>
+            </div>
+
+            <!-- Green flags -->
+            <div class="card green-flags hidden" id="greenFlagsCard">
+                <h3>Green Flags</h3>
+                <div id="greenFlagsContent"></div>
+            </div>
+
+            <!-- Your words -->
+            <div class="card word-stats hidden" id="yourWordsCard">
+                <h3>Top used words (you)</h3>
+                <div id="yourWordsContent"></div>
+            </div>
+
+            <!-- Her words -->
+            <div class="card word-stats hidden" id="herWordsCard">
+                <h3>Top used words (her)</h3>
+                <div id="herWordsContent"></div>
+            </div>
+
+            <!-- Suggestions for You -->
+            <div class="card hidden" id="suggestionsForYouCard">
+                <h3>Suggestions for You</h3>
+                <div class="suggestion-box" id="suggestionsForYouContent"></div>
+            </div>
+
+            <!-- Suggestions for Her -->
+            <div class="card hidden" id="suggestionsForHerCard">
+                <h3>Suggestions for Her</h3>
+                <div class="suggestion-box" id="suggestionsForHerContent"></div>
+            </div>
+
+            <!-- Attachment style -->
+            <div class="card hidden" id="attachmentStyleCard">
+                <h3>Attachment style</h3>
+                <div class="attachment-style" id="attachmentStyleContent"></div>
+            </div>
+
+            <!-- Messages chart -->
+            <div class="card chart-card hidden" id="messageChartCard">
+                <h3>Messages per month</h3>
+                <canvas id="messageChart"></canvas>
+            </div>
+
+            <!-- Conclusion -->
+            <div class="card conclusion-box hidden" id="conclusionCard">
+                <h3>Conclusion</h3>
+                <p class="conclusion-text" id="conclusionContent"></p>
             </div>
         </div>
 
-        <div class="card hidden" id="responseTimeCard">
-            <h3>Average Response Time</h3>
-            <div class="message-stats">
-                <div class="stat-group">
-                    <div class="stat-number" id="response_time_you">0s</div>
-                    <div class="stat-label">You</div>
-                </div>
-                <div class="stat-group">
-                    <div class="stat-number" id="response_time_other">0s</div>
-                    <div class="stat-label">Her</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card interest-card hidden" id="interestCard">
-            <h3>Interest Level</h3>
-            <div class="interest-container">
-                <div class="stat-group">
-                    <div class="interest-value" id="interest_you">0%</div>
-                    <div class="stat-label">You</div>
-                </div>
-                <div class="stat-group">
-                    <div class="interest-value" id="interest_other">0%</div>
-                    <div class="stat-label">Her</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card hidden" id="complimentCard">
-            <h3>Compliment Count</h3>
-            <div class="message-stats">
-                <div class="stat-group">
-                    <div class="stat-number" id="compliments_you">0</div>
-                    <div class="stat-label">You</div>
-                </div>
-                <div class="stat-group">
-                    <div class="stat-number" id="compliments_other">0</div>
-                    <div class="stat-label">Her</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Red flags -->
-        <div class="card red-flags hidden" id="redFlagsCard">
-            <h3>Red Flags▶</h3>
-            <div id="redFlagsContent"></div>
-        </div>
-
-        <!-- Green flags -->
-        <div class="card green-flags hidden" id="greenFlagsCard">
-            <h3>Green Flags</h3>
-            <div id="greenFlagsContent"></div>
-        </div>
-
-        <!-- Your words -->
-        <div class="card word-stats hidden" id="yourWordsCard">
-            <h3>Top used words (you)</h3>
-            <div id="yourWordsContent"></div>
-        </div>
-        
-        <!-- Her words -->
-        <div class="card word-stats hidden" id="herWordsCard">
-            <h3>Top used words (her)</h3>
-            <div id="herWordsContent"></div>
-        </div>
-
-        <!-- Suggestions for You -->
-        <div class="card hidden" id="suggestionsForYouCard">
-            <h3>Suggestions for You</h3>
-            <div class="suggestion-box" id="suggestionsForYouContent"></div>
-        </div>
-
-        <!-- Suggestions for Her -->
-        <div class="card hidden" id="suggestionsForHerCard">
-            <h3>Suggestions for Her</h3>
-            <div class="suggestion-box" id="suggestionsForHerContent"></div>
-        </div>
-
-        <!-- Attachment style -->
-        <div class="card hidden" id="attachmentStyleCard">
-            <h3>Attachment style</h3>
-            <div class="attachment-style" id="attachmentStyleContent"></div>
-        </div>
-
-        <!-- Messages chart -->
-        <div class="card chart-card hidden" id="messageChartCard">
-            <h3>Messages per month</h3>
-            <canvas id="messageChart"></canvas>
-        </div>
-
-        <!-- Conclusion -->
-        <div class="card conclusion-box hidden" id="conclusionCard">
-            <h3>Conclusion</h3>
-            <p class="conclusion-text" id="conclusionContent"></p>
-        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
@@ -434,7 +457,7 @@ To integrate the design and additional features from the second code into your f
                         body: JSON.stringify({
                             contents: [{
                                 parts: [{
-                                    text: `Analyze this WhatsApp chat and return STRICT JSON format (NO MARKDOWN, NO CODE BLOCKS) with: 
+                                    text: `Analyze this WhatsApp chat and return STRICT JSON format (NO MARKDOWN, NO CODE BLOCKS , count small effot and every small message in messageStatistics , intrest leval in precentage ,count small compliment and word of affermation ,in words make the count complete sentence  ) with: 
                                     messageStatistics: { you: number, other: number },
                                     responseTimes: { you: string, other: string },
                                     interestLevels: { you: string, other: string },
@@ -532,14 +555,14 @@ To integrate the design and additional features from the second code into your f
                     </div>
                 `).join('');
 
-                        // Update Suggestions
-                        const suggestionsForYouContent = document.getElementById('suggestionsForYouContent');
-                suggestionsForYouContent.innerHTML = analysis.suggestionsForYou.map(suggestion => 
+                // Update Suggestions
+                const suggestionsForYouContent = document.getElementById('suggestionsForYouContent');
+                suggestionsForYouContent.innerHTML = analysis.suggestionsForYou.map(suggestion =>
                     `<p>${suggestion}</p>`
                 ).join('');
 
                 const suggestionsForHerContent = document.getElementById('suggestionsForHerContent');
-                suggestionsForHerContent.innerHTML = analysis.suggestionsForHer.map(suggestion => 
+                suggestionsForHerContent.innerHTML = analysis.suggestionsForHer.map(suggestion =>
                     `<p>${suggestion}</p>`
                 ).join('');
 
@@ -571,8 +594,8 @@ To integrate the design and additional features from the second code into your f
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                         datasets: [{
                             label: 'Messages',
                             data: monthlyData,
@@ -606,6 +629,48 @@ To integrate the design and additional features from the second code into your f
         }, 3000);
 
         document.addEventListener('DOMContentLoaded', () => new ChatAnalyzer());
+
+
+        async function uploadFile() {
+            const fileInput = document.getElementById("textFile");  // Changed ID
+            if (!fileInput.files.length) return alert("Please select a file.");
+
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            let response = await fetch("http://localhost:5000/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            let result = await response.json();
+            if (result.success) {
+                alert("File uploaded successfully!");
+                loadFiles();
+            } else {
+                alert("Upload failed!");
+            }
+        }
+
+        async function loadFiles() {
+            let response = await fetch("http://localhost:5000/files");
+            let files = await response.json();
+
+            let fileList = document.getElementById("fileList");
+            fileList.innerHTML = files.map(file => {
+                let fileUrl = `http://localhost:5000/uploads/${file}`;
+                let fileType = file.split(".").pop().toLowerCase();
+
+                if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileType)) {
+                    return `<p><img src="${fileUrl}" alt="${file}" width="200"></p>`;
+                } else {
+                    return `<p><a href="${fileUrl}" download>${file}</a></p>`;
+                }
+            }).join("");
+        }
+
+        loadFiles();
     </script>
 </body>
+
 </html>
