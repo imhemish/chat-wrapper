@@ -638,7 +638,7 @@
             let formData = new FormData();
             formData.append("file", fileInput.files[0]);
 
-            let response = await fetch("http://localhost:5000/upload", {
+            let response = await fetch("http://chat-wrapper-nu.vercel.app/upload", {
                 method: "POST",
                 body: formData
             });
