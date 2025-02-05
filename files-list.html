@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Browser</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .file-list { margin-top: 20px; }
+        .file-item { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>File Browser</h1>
+    <button onclick="fetchFiles()">Load Files</button>
+    <div class="file-list" id="fileList"></div>
+
+    <script>
+        async function fetchFiles() {
+            const response = await fetch("/files");
+            const data = await response.json();
+
+            if (data.success) {
+                const fileList = document.getElementById("fileList");
+                fileList.innerHTML = "";
+                data.files.forEach(file => {
+                    const fileItem = document.createElement("div");
+                    fileItem.className = "file-item";
+                    fileItem.innerHTML = `<a href="${file.url}" target="_blank">${file.name}</a>`;
+                    fileList.appendChild(fileItem);
+                });
+            } else {
+                alert("Failed to load files");
+            }
+        }
+    </script>
+</body>
+</html>
